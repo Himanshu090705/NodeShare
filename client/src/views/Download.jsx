@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { socket } from "../socket"; // Shared socket connection
 import axios from "axios";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 function Download() {
   const { id } = useParams();
@@ -53,17 +55,27 @@ function Download() {
   };
 
   return (
-    <>
-      <h2>Download File</h2>
-      {error ? (
-        <p style={{ color: "red" }}>{error}</p>
-      ) : (
-        <>
-          <p>File Name: {fileName}</p>
-          <button onClick={handleDownload}>Download</button>
-        </>
-      )}
-    </>
+    <div className="container mt-5">
+      <div
+        className="card shadow p-4 text-center"
+        style={{ maxWidth: "500px", margin: "0 auto" }}
+      >
+        <h4 className="mb-3">Download File</h4>
+
+        {error ? (
+          <div className="alert alert-danger">{error}</div>
+        ) : (
+          <>
+            <div className="alert alert-success">
+              <strong>File Found:</strong> {fileName}
+            </div>
+            <button className="btn btn-primary mt-2" onClick={handleDownload}>
+              <i className="bi bi-download"></i> Download File
+            </button>
+          </>
+        )}
+      </div>
+    </div>
   );
 }
 
