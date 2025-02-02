@@ -1,4 +1,4 @@
-# README for Nodeshare: Peer-to-Peer File Sharing and Conversion Website
+# Nodeshare: Peer-to-Peer File Sharing and Conversion Website
 
 ## Overview
 
@@ -115,10 +115,10 @@ Nodeshare's database is designed to support the platform's features efficiently.
 ## Getting Started
 
 1. Clone the repository.
-2. Install the required dependencies using `npm install`.
-3. Configure the database settings in the `.env` file.
+2. Install the required dependencies using `npm install` on both `client` and `server`.
+3. Configure the settings in the `.env` file in `client`.
 4. Start the server using `npm start`.
-5. Start the client using `npm run dev`.
+5. Start the client using `npm run dev -- --host`.
 
 ## Contribution
 

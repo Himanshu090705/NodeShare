@@ -10,7 +10,7 @@ function Download() {
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState("");
   const [error, setError] = useState("");
-  const url = `${import.meta.env.VITE_PROTOCOL}://${import.meta.env.VITE_HOST}:${import.meta.env.VITE_SERVER_PORT}`;
+  const url = `${import.meta.env.VITE_SERVER_URL}`;
 
   useEffect(() => {
     socket.connect();
