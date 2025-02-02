@@ -5,7 +5,7 @@ const http = require("http");
 const { v4: uuidv4 } = require("uuid");
 
 const app = express();
-const port = 3001
+const port = 3001;
 app.use(cors());
 app.use(express.json());
 
@@ -15,6 +15,7 @@ const io = new Server(server, {
     origin: "*",
     methods: ["GET", "POST"],
   },
+  maxHttpBufferSize: 1e8, // 100Mb
 });
 
 const files = {};

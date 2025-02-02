@@ -35,7 +35,7 @@ function Upload() {
   const handleCopyLink = () => {
     const link = `${import.meta.env.VITE_CLIENT_URL}/file/${fileId}`;
     navigator.clipboard.writeText(link);
-    document.getElementById("copy-button").innerText = "Copied!"
+    document.getElementById("copy-button").innerText = "Copied!";
     document.getElementById("copy-button").classList.remove("btn-primary");
     document.getElementById("copy-button").classList.add("btn-success");
   };
@@ -66,7 +66,11 @@ function Upload() {
                     value={`${import.meta.env.VITE_CLIENT_URL}/file/${fileId}`}
                     readOnly
                   />
-                  <button className="btn btn-primary" onClick={handleCopyLink} id="copy-button">
+                  <button
+                    className="btn btn-primary"
+                    onClick={handleCopyLink}
+                    id="copy-button"
+                  >
                     Copy
                   </button>
                 </div>
