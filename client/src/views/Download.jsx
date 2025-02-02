@@ -7,35 +7,33 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 function Download() {
   const { id } = useParams();
-  const [file, setFile] = useState(null);
-  const [fileName, setFileName] = useState("");
+  const [files, setFiles] = useState([]);
   const [error, setError] = useState("");
   const url = `${import.meta.env.VITE_SERVER_URL}`;
 
   useEffect(() => {
     socket.connect();
 
-    const fetchFile = async () => {
+    const fetchFiles = async () => {
       try {
         const res = await axios.get(`${url}/file/${id}`);
-        setFileName(res.data.fileName);
-        setFile(res.data.fileData);
+        setFiles(res.data.files);
         socket.emit("downloadFile", { fileId: id });
       } catch (err) {
-        setError("File not available or uploader is disconnected.");
+        setError("Files not available or uploader is disconnected.");
       }
     };
 
-    fetchFile();
+    fetchFiles();
 
     socket.on("fileNotAvailable", (message) => {
       setError(message);
-      setFile(null);
+      setFiles([]);
     });
 
     socket.on("fileNotFound", (message) => {
       setError(message);
-      setFile(null);
+      setFiles([]);
     });
 
     return () => {
@@ -45,13 +43,11 @@ function Download() {
     };
   }, [id]);
 
-  const handleDownload = () => {
-    if (file) {
-      const link = document.createElement("a");
-      link.href = file;
-      link.download = fileName;
-      link.click();
-    }
+  const handleDownload = (file) => {
+    const link = document.createElement("a");
+    link.href = file.fileData;
+    link.download = file.fileName;
+    link.click();
   };
 
   return (
@@ -60,19 +56,24 @@ function Download() {
         className="card shadow p-4 text-center"
         style={{ maxWidth: "500px", margin: "0 auto" }}
       >
-        <h4 className="mb-3">Download File</h4>
+        <h4 className="mb-3">Download Files</h4>
 
         {error ? (
           <div className="alert alert-danger">{error}</div>
         ) : (
-          <>
-            <div className="alert alert-success">
-              <strong>File Found:</strong> {fileName}
+          files.map((file, index) => (
+            <div key={index} className="alert alert-success">
+              <strong>File Found:</strong> {file.fileName}
+              <div>
+                <button
+                  className="btn btn-primary mt-2 w-100"
+                  onClick={() => handleDownload(file)}
+                >
+                  <i className="bi bi-download"></i> Download File
+                </button>
+              </div>
             </div>
-            <button className="btn btn-primary mt-2" onClick={handleDownload}>
-              <i className="bi bi-download"></i> Download File
-            </button>
-          </>
+          ))
         )}
       </div>
     </div>

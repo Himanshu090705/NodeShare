@@ -25,10 +25,10 @@ io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
   activeUsers[socket.id] = true;
 
-  socket.on("uploadFile", ({ fileName, fileData }) => {
+  socket.on("uploadFiles", ({ files: fileDataArray }) => {
     const fileId = uuidv4();
-    files[fileId] = { fileName, fileData, uploaderId: socket.id }; // Store uploader's socket ID
-    socket.emit("fileUploaded", { fileId });
+    files[fileId] = { fileDataArray, uploaderId: socket.id }; // Store uploader's socket ID
+    socket.emit("filesUploaded", { fileId });
   });
 
   socket.on("downloadFile", ({ fileId }) => {
@@ -36,7 +36,7 @@ io.on("connection", (socket) => {
       const { uploaderId } = files[fileId];
 
       if (activeUsers[uploaderId]) {
-        socket.emit("receiveFile", files[fileId]);
+        socket.emit("receiveFiles", files[fileId]);
       } else {
         socket.emit("fileNotAvailable", "Uploader is not connected.");
       }
@@ -57,7 +57,7 @@ app.get("/file/:id", (req, res) => {
     const { uploaderId } = files[id];
 
     if (activeUsers[uploaderId]) {
-      res.json({ fileName: files[id].fileName, fileData: files[id].fileData });
+      res.json({ files: files[id].fileDataArray });
     } else {
       res.status(403).json({ error: "Uploader is not connected" });
     }

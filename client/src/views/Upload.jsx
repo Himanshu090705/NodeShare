@@ -5,31 +5,56 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 function Upload() {
   const [fileId, setFileId] = useState("");
+  const [files, setFiles] = useState([]);
+
   useEffect(() => {
     socket.connect();
 
-    const onFileUploaded = ({ fileId }) => {
+    const onFilesUploaded = ({ fileId }) => {
       setFileId(fileId);
     };
 
-    socket.on("fileUploaded", onFileUploaded);
+    socket.on("filesUploaded", onFilesUploaded);
 
     return () => {
-      socket.off("fileUploaded", onFileUploaded);
+      socket.off("filesUploaded", onFilesUploaded);
     };
   }, []);
 
   const handleFileUpload = (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
+    const selectedFiles = Array.from(e.target.files);
+    setFiles(selectedFiles);
+    uploadFiles(selectedFiles);
+  };
 
-    reader.onload = (event) => {
-      socket.emit("uploadFile", {
-        fileName: file.name,
-        fileData: event.target.result,
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const droppedFiles = Array.from(e.dataTransfer.files);
+    setFiles(droppedFiles);
+    uploadFiles(droppedFiles);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const uploadFiles = (filesToUpload) => {
+    const fileDataArray = filesToUpload.map((file) => {
+      const reader = new FileReader();
+      return new Promise((resolve) => {
+        reader.onload = (event) => {
+          resolve({
+            fileName: file.name,
+            fileData: event.target.result,
+          });
+        };
+        reader.readAsDataURL(file);
       });
-    };
-    reader.readAsDataURL(file);
+    });
+
+    Promise.all(fileDataArray).then((fileData) => {
+      socket.emit("uploadFiles", { files: fileData });
+    });
   };
 
   const handleCopyLink = () => {
@@ -46,17 +71,20 @@ function Upload() {
         <div
           className="card shadow p-4"
           style={{ maxWidth: "500px", margin: "0 auto" }}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
         >
-          <h4 className="text-center mb-3">Transfer a File</h4>
+          <h4 className="text-center mb-3">Transfer Files</h4>
           <input
             type="file"
             className="form-control mb-3"
+            multiple
             onChange={handleFileUpload}
           />
 
           {fileId && (
             <div className="alert alert-success mt-3" role="alert">
-              <strong>File is ready to send!</strong>
+              <strong>Files are ready to send!</strong>
               <div className="mt-2">
                 <small>Share this link:</small>
                 <div className="input-group">
@@ -92,9 +120,9 @@ function Upload() {
           <>
             <h1>Share files directly from your device to anywhere</h1>
             <p className="fs-5 mt-5">
-              Transfer files of any size directly from your device to another
-              without uploading or storing anything online, ensuring full
-              privacy and security.
+              Transfer files directly from your device to another without
+              uploading or storing anything online, ensuring full privacy and
+              security.
             </p>
           </>
         )}
