@@ -11,6 +11,7 @@ function App() {
         <Route path='/' element={<Upload />} />
         <Route path="/file/:id" element={<Download />} />
       </Routes>
+      <Footer/>
     </div>
   );
 }
