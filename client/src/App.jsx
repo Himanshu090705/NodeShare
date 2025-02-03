@@ -11,7 +11,7 @@ function App() {
         <div>
             <Navbar />
             <Routes>
-                <Route path="/" element={<Upload />} />
+                <Route path="/upload" element={<Upload />} />
                 <Route path="/file/:id" element={<Download />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />

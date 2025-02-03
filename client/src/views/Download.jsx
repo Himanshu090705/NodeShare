@@ -4,12 +4,13 @@ import { socket } from "../socket"; // Shared socket connection
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import { SERVER_URL } from "../../../config";
 
 function Download() {
   const { id } = useParams();
   const [files, setFiles] = useState([]);
   const [error, setError] = useState("");
-  const url = `${import.meta.env.VITE_SERVER_URL}`;
+  const url = `${SERVER_URL}/api`;
 
   useEffect(() => {
     socket.connect();
@@ -17,7 +18,8 @@ function Download() {
     const fetchFiles = async () => {
       try {
         const res = await axios.get(`${url}/file/${id}`);
-        setFiles(res.data.files);
+        console.log(res.data);
+        setFiles(res.data.files || [])
         socket.emit("downloadFile", { fileId: id });
       } catch (err) {
         setError("Files not available or uploader is disconnected.");

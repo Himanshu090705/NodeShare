@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { socket } from "../socket";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import { SERVER_URL } from "../../../config";
 
 function Upload() {
   const [fileId, setFileId] = useState("");
@@ -58,7 +59,7 @@ function Upload() {
   };
 
   const handleCopyLink = () => {
-    const link = `${import.meta.env.VITE_CLIENT_URL}/file/${fileId}`;
+    const link = `${SERVER_URL}/file/${fileId}`;
     navigator.clipboard.writeText(link);
     document.getElementById("copy-button").innerText = "Copied!";
     document.getElementById("copy-button").classList.remove("btn-primary");
@@ -91,7 +92,7 @@ function Upload() {
                     <input
                       type="text"
                       className="form-control"
-                      value={`${import.meta.env.VITE_CLIENT_URL}/file/${fileId}`}
+                      value={`${SERVER_URL}/file/${fileId}`}
                       readOnly
                     />
                     <button
