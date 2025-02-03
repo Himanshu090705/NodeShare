@@ -1,10 +1,11 @@
+import { NavLink } from "react-router-dom";
 function Navbar() {
     return (
         <nav className="navbar navbar-expand-lg sticky-top bg-body-tertiary">
             <div className="container-fluid">
-                <a className="navbar-brand" href="#">
-                    NodeShare
-                </a>
+                <NavLink className="navbar-brand" to="/">
+                    <i class="fa-solid fa-retweet"></i> NodeShare
+                </NavLink>
                 <button
                     className="navbar-toggler"
                     type="button"
@@ -19,25 +20,40 @@ function Navbar() {
                 <div className="collapse navbar-collapse" id="navbarNav">
                     <ul className="navbar-nav">
                         <li className="nav-item">
-                            <a
-                                className="nav-link active"
+                            <NavLink
+                                className="nav-link"
                                 aria-current="page"
-                                href="#"
+                                to="/upload"
                             >
-                                Home
-                            </a>
+                                <i class="fa-solid fa-share-nodes"></i> Share
+                            </NavLink>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="#">
-                                Converter
-                            </a>
+                            <NavLink className="nav-link" to="#">
+                                <i class="fa-solid fa-arrows-turn-to-dots"></i>{" "}
+                                Convert
+                            </NavLink>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="#">
-                                Compresssor
-                            </a>
+                            <NavLink className="nav-link" to="#">
+                                <i class="fa-solid fa-minimize"></i> Compress
+                            </NavLink>
                         </li>
                     </ul>
+                    <div class="navbar-nav ms-auto">
+                        <NavLink className="nav-link" to="/signup">
+                            <i class="fa-solid fa-user-plus"></i>&nbsp;
+                            <b>Sign Up</b>
+                        </NavLink>
+                        <NavLink className="nav-link" to="/login">
+                            <i class="fa-solid fa-right-to-bracket"></i>&nbsp;
+                            <b>Login</b>
+                        </NavLink>
+                        <NavLink className="nav-link" to="/logout">
+                            <i class="fa-solid fa-right-to-bracket"></i>&nbsp;
+                            <b>Logout</b>
+                        </NavLink>
+                    </div>
                 </div>
             </div>
         </nav>
