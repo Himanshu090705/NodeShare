@@ -52,29 +52,30 @@ function Download() {
 
   return (
     <div className="container mt-5">
-      <div
-        className="card shadow p-4 text-center"
-        style={{ maxWidth: "500px", margin: "0 auto" }}
-      >
-        <h4 className="mb-3">Download Files</h4>
+      <div className="row justify-content-center">
+        <div className="col-12 col-md-8 col-lg-6">
+          <div className="card shadow p-4 text-center">
+            <h4 className="mb-3">Download Files</h4>
 
-        {error ? (
-          <div className="alert alert-danger">{error}</div>
-        ) : (
-          files.map((file, index) => (
-            <div key={index} className="alert alert-success">
-              <strong>File Found:</strong> {file.fileName}
-              <div>
-                <button
-                  className="btn btn-primary mt-2 w-100"
-                  onClick={() => handleDownload(file)}
-                >
-                  <i className="bi bi-download"></i> Download File
-                </button>
-              </div>
-            </div>
-          ))
-        )}
+            {error ? (
+              <div className="alert alert-danger">{error}</div>
+            ) : (
+              files.map((file, index) => (
+                <div key={index} className="alert alert-success">
+                  <strong>File Found:</strong> {file.fileName}
+                  <div>
+                    <button
+                      className="btn btn-primary mt-2 w-100"
+                      onClick={() => handleDownload(file)}
+                    >
+                      <i className="bi bi-download"></i> Download File
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
