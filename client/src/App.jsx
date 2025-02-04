@@ -8,19 +8,21 @@ import Signup from "./views/Signup";
 import Home from "./views/Home";
 
 function App() {
-    return (
-        <div>
-            <Navbar />
-            <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/upload" element={<Upload />} />
-                <Route path="/file/:id" element={<Download />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-            </Routes>
-            <Footer />
-        </div>
-    );
+  return (
+    <div className="d-flex flex-column min-vh-100">
+      <Navbar />
+      <main className="flex-grow-1">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/upload" element={<Upload />} />
+          <Route path="/file/:id" element={<Download />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+        </Routes>
+      </main>
+      <Footer />
+    </div>
+  );
 }
 
 export default App;
