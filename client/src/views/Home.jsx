@@ -1,139 +1,148 @@
-import React from "react";
-
+import { Link } from "react-router-dom";
+import useUserStore from "../store/userStore";
 const Home = () => {
-    return (
-        <div className="container d-flex justify-content-center align-items-center mt-4">
-            <div class="col-6 m-auto form-border py-4">
-                {/* // <div className="col-6 col-md-6 col-lg-4 bg-dark text-light"> */}
-                <h1 className="text-info text-center mb-4">
-                    What is NodeShare?
-                </h1>
-                <div className="row justify-content-center align-items-center mb-4">
-                    <div className="col-md-3 border border-info rounded p-3">
-                        Choose File
-                    </div>
-                    <div className="col-md-1 text-info fs-2">→</div>
-                    <div className="col-md-3 border border-info rounded p-3">
-                        P2P Transfer
-                    </div>
-                    <div className="col-md-1 text-info fs-2">→</div>
-                    <div className="col-md-3 border border-info rounded p-3">
-                        Download File
-                    </div>
-                </div>
-                <div className="row justify-content-center align-items-center mb-4">
-                    <div className="col-md-3 border border-info rounded p-3">
-                        Convert File
-                    </div>
-                    <div className="col-md-1 text-info fs-2">→</div>
-                    <div className="col-md-3 border border-info rounded p-3">
-                        Output Format
-                    </div>
-                </div>
-                <p className="mt-4 fs-5">
-                    NodeShare is a free and independent peer-to-peer (P2P) file
-                    sharing and file conversion service. We prioritize privacy,
-                    speed, and security, ensuring that your data is only in your
-                    hands.
-                </p>
-                <p className="mt-1 fs-5 mb-2">
-                    We store nothing online: simply close your browser to stop
-                    sending.
-                </p>
-                <hr />
-                <div className="row align-items-center mt-2 mb-4 mt-4 py-4">
-                    <div className="col-md-2 text-center">
-                        <div className="bg-light p-3 border rounded-circle">
-                            <i className="fa-solid fa-cloud-arrow-up fs-1 text-info"></i>
-                            {/* <FaCloudUploadAlt size={50} className="text-info" /> */}
-                        </div>
-                    </div>
-                    <div className="col-md-10">
-                        <h4>Files are shared straight from your device</h4>
-                        <p>
-                            When you close the browser tab, your files are no
-                            longer accessible, minimizing the risk of
-                            unauthorized access. NodeShare uses peer-to-peer
-                            technology to ensure direct transfers without
-                            storing your files on any server.
-                        </p>
-                    </div>
-                </div>
-
-                <div className="row align-items-center mb-4 mt-4 py-4">
-                    <div className="col-md-10">
-                        <h4>No more file size limits</h4>
-                        <p>
-                            Since we don't store your data, there are no file
-                            size restrictions. Share files of any size with
-                            complete freedom.
-                        </p>
-                    </div>
-                    <div className="col-md-2 text-center">
-                        <div className="bg-light p-3 border rounded-circle">
-                            <i class="fa-solid fa-ruler fs-1 text-info"></i>
-                        </div>
-                        {/* <FaRulerCombined size={50} className="text-info" /> */}
-                    </div>
-                </div>
-
-                <div className="row align-items-center mb-4 mt-4 py-4">
-                    <div className="col-md-2 text-center">
-                        <div className="bg-light p-3 border rounded-circle">
-                            <i class="fa-solid fa-user-lock fs-1 text-info"></i>
-                        </div>
-                        {/* <FaLock size={50} className="text-info" /> */}
-                    </div>
-                    <div className="col-md-10">
-                        <h4>Only the receiver can access your files</h4>
-                        <p>
-                            Your data is encrypted end-to-end, ensuring only the
-                            intended receiver can access the files. NodeShare
-                            prioritizes security with the latest encryption
-                            standards.
-                        </p>
-                    </div>
-                </div>
-
-                <div className="row align-items-center mb-4 mt-4 py-4">
-                    <div className="col-md-10">
-                        <h4>Low environmental impact</h4>
-                        <p>
-                            Since we don’t store data, there’s no need for bulky
-                            servers, reducing energy consumption and carbon
-                            footprint.
-                        </p>
-                    </div>
-                    <div className="col-md-2 text-center">
-                        <div className="bg-light p-3 border rounded-circle">
-                            <i class="fa-solid fa-leaf fs-1 text-info"></i>
-                        </div>
-                        {/* <FaLeaf size={50} className="text-info" /> */}
-                    </div>
-                </div>
-
-                <div className="row align-items-center mb-4 mt-4 py-4">
-                    <div className="col-md-2 text-center">
-                        <div className="bg-light p-3 border rounded-circle">
-                            <i class="fa-solid fa-repeat fs-1 text-info"></i>
-                        </div>
-                        {/* <FaExchangeAlt size={50} className="text-info" /> */}
-                    </div>
-                    <div className="col-md-10">
-                        <h4>Effortless File Conversion</h4>
-                        <p>
-                            Unlike other services, NodeShare also offers
-                            seamless file conversion. Easily transform files
-                            into different formats before sending them.
-                        </p>
-                    </div>
-                </div>
-                <h2 className="mt-5 text-secondary">
-                    Seamless Sharing, Effortless Conversion.
-                </h2>
-            </div>
+  const isLogin = useUserStore((state) => state.isLogin);
+  return (
+    <>
+      <header className="bg-secondary text-white text-center py-5 shadow-lg">
+        <div className="container">
+          <h1 className="display-3 fw-bold">Secure P2P File Sharing</h1>
+          <p className="lead fs-4">
+            Share files directly with your peers—secure, fast, and private.
+          </p>
+          {isLogin ? (
+            <Link
+              to="/upload"
+              className="btn btn-light btn-lg mt-4 px-5 py-3 fw-semibold rounded-pill shadow-sm"
+            >
+              Get Started →
+            </Link>
+          ) : (
+            <Link
+              to="/login"
+              className="btn btn-light btn-lg mt-4 px-5 py-3 fw-semibold rounded-pill shadow-sm"
+            >
+              Get Started →
+            </Link>
+          )}
         </div>
-    );
+      </header>
+
+      <section className="container text-center py-5">
+        <h2 className="text-secondary fw-bold mb-4">What is NodeShare?</h2>
+        <div className="row justify-content-center gap-4 align-items-center">
+          <div className="col-md-3 card p-4 border-secondary shadow-lg">
+            <h5 className="text-secondary fw-bold">Choose File</h5>
+          </div>
+          <div className="col-md-1 text-secondary fs-2">→</div>
+          <div className="col-md-3 card p-4 border-secondary shadow-lg">
+            <h5 className="text-secondary fw-bold">P2P Transfer</h5>
+          </div>
+          <div className="col-md-1 text-secondary fs-2">→</div>
+          <div className="col-md-3 card p-4 border-secondary shadow-lg">
+            <h5 className="text-secondary fw-bold">Download File</h5>
+          </div>
+        </div>
+        <div className="row justify-content-center gap-4 mt-5 align-items-center">
+          <div className="col-md-3 card p-4 border-secondary shadow-lg">
+            <h5 className="text-secondary fw-bold">Convert File</h5>
+          </div>
+          <div className="col-md-1 text-secondary fs-2">→</div>
+          <div className="col-md-3 card p-4 border-secondary shadow-lg">
+            <h5 className="text-secondary fw-bold">Output Format</h5>
+          </div>
+        </div>
+      </section>
+
+      <section className="container py-5">
+        <div className="row align-items-center">
+          <div className="col-md-6 text-center">
+            <i className="fa-solid fa-cloud-arrow-up fs-1 text-secondary bg-light p-4 border rounded-circle shadow-sm"></i>
+          </div>
+          <div className="col-md-6">
+            <h4 className="fw-bold">
+              Files are shared straight from your device
+            </h4>
+            <p className="text-muted">
+              Closing the browser tab stops sharing, ensuring data privacy.
+              NodeShare prioritizes secure peer-to-peer transfers without
+              storing files.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="container py-5 bg-light rounded shadow-sm">
+        <div className="row align-items-center">
+          <div className="col-md-6">
+            <h4 className="fw-bold">No More File Size Limits</h4>
+            <p className="text-muted">
+              Since we don’t store data, you can share files of any size with
+              complete freedom.
+            </p>
+          </div>
+          <div className="col-md-6 text-center">
+            <i className="fa-solid fa-ruler fs-1 text-secondary bg-white p-4 border rounded-circle shadow-sm"></i>
+          </div>
+        </div>
+      </section>
+
+      <section className="container py-5">
+        <div className="row align-items-center">
+          <div className="col-md-6 text-center">
+            <i className="fa-solid fa-user-lock fs-1 text-secondary bg-light p-4 border rounded-circle shadow-sm"></i>
+          </div>
+          <div className="col-md-6">
+            <h4 className="fw-bold">Only the Receiver Can Access Your Files</h4>
+            <p className="text-muted">
+              With end-to-end encryption, only the intended recipient can access
+              your files, ensuring maximum security.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="container py-5 bg-light rounded shadow-sm">
+        <div className="row align-items-center">
+          <div className="col-md-6">
+            <h4 className="fw-bold">Low Environmental Impact</h4>
+            <p className="text-muted">
+              No bulky servers, reduced energy consumption, and a smaller carbon
+              footprint.
+            </p>
+          </div>
+          <div className="col-md-6 text-center">
+            <i className="fa-solid fa-leaf fs-1 text-secondary bg-white p-4 border rounded-circle shadow-sm"></i>
+          </div>
+        </div>
+      </section>
+
+      <section className="container text-center py-5">
+        <h2 className="text-secondary fw-bold">
+          Seamless Sharing, Effortless Conversion.
+        </h2>
+        <p className="text-muted">
+          Experience the future of file transfers and conversions with
+          NodeShare.
+        </p>
+        {isLogin ? (
+          <Link
+            to='/upload'
+            className="btn btn-secondary text-white btn-lg px-5 py-3 fw-semibold rounded-pill shadow-sm mt-4"
+          >
+            Start Now
+          </Link>
+        ) : (
+          <Link
+            to="/signup"
+            className="btn btn-secondary text-white btn-lg px-5 py-3 fw-semibold rounded-pill shadow-sm mt-4"
+          >
+            Start Now
+          </Link>
+        )}
+      </section>
+    </>
+  );
 };
 
 export default Home;

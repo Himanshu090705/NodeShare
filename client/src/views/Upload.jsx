@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { socket } from "../socket";
+import { QRCode } from "react-qr-code";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { SERVER_URL } from "../../../config";
@@ -103,6 +104,22 @@ function Upload() {
                       Copy
                     </button>
                   </div>
+                  <div className="mt-2 border p-1">
+                    <center>
+                      <small>Or Scan this QR Code</small>
+                      <div>
+                        <QRCode
+                          size={256}
+                          style={{
+                            height: "8rem",
+                            width: "8rem",
+                          }}
+                          value={`${SERVER_URL}/file/${fileId}`}
+                          viewBox={`0 0 256 256`}
+                        />
+                      </div>
+                    </center>
+                  </div>
                 </div>
               </div>
             )}
@@ -130,6 +147,37 @@ function Upload() {
               </p>
             </>
           )}
+
+          <table className="table mt-4 ">
+            <tbody>
+              <tr style={{ height: "50px" }}>
+                <td className="w-12">
+                  <h5>
+                    <i className="fa-solid fa-infinity"></i> No file size limit
+                  </h5>
+                </td>
+                <td className="w-12">
+                  <h5>
+                    <i className="fa-solid fa-bolt"></i> Blazingly fast
+                  </h5>
+                </td>
+              </tr>
+              <tr className="mt-5" style={{ height: "50px" }}>
+                <td className="w-2">
+                  <h5>
+                    <i className="fa-solid fa-right-left"></i> Peer-to-peer
+                  </h5>
+                </td>
+                <td className="w-2">
+                  <h5>
+                    <i className="fa-solid fa-file-invoice"></i>
+                    {"  "}
+                    End-to-end encrypted
+                  </h5>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
