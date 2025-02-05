@@ -22,7 +22,7 @@ const io = new Server(server, {
     origin: "*",
     methods: ["GET", "POST"],
   },
-  maxHttpBufferSize: 1e8, // 100Mb
+  maxHttpBufferSize: 500000000, // 100Mb
 });
 
 const files = {};
