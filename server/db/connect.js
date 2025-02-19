@@ -1,8 +1,6 @@
-import mongoose from 'mongoose';
+import { createClient } from "@supabase/supabase-js";
+import { SUPABASE_KEY, SUPABASE_URL } from "../../config.js";
+const url = SUPABASE_URL;
+const anonKey = SUPABASE_KEY;
 
-const db = process.env.DB || "mongodb://localhost:27018/NodeShare"
-mongoose.connect(db).then(() => {
-    console.log("Database connected successfully");
-}).catch((error) => {
-    console.log('Unable to connect to database due to ', error);
-})
+export const supabase = createClient(url, anonKey);

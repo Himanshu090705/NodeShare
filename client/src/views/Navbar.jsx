@@ -1,8 +1,26 @@
 import { NavLink } from "react-router-dom";
 import useUserStore from "../store/userStore";
+import { supabase } from "../../../server/db/connect";
+import { useEffect } from "react";
+
 function Navbar() {
-  const isLogin = useUserStore((state) => state.isLogin);
-  const setIsLogin = useUserStore((state) => state.setIsLogin);
+  const session = useUserStore((state) => state.session);
+  const setAuthSession = useUserStore((state) => state.setAuthSession);
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setAuthSession(session);
+    };
+
+    checkSession();
+  }, [setAuthSession]);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setAuthSession(null);
+  };
+
   return (
     <nav className="navbar navbar-expand-lg sticky-top bg-body-tertiary">
       <div className="container-fluid">
@@ -23,7 +41,7 @@ function Navbar() {
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav">
             <li className="nav-item">
-              {isLogin ? (
+              {session ? (
                 <NavLink className="nav-link" aria-current="page" to="/upload">
                   <i className="fa-solid fa-share-nodes"></i> Share
                 </NavLink>
@@ -45,7 +63,7 @@ function Navbar() {
             </li>
           </ul>
           <div className="navbar-nav ms-auto">
-            {!isLogin ? (
+            {!session ? (
               <>
                 <NavLink className="nav-link" to="/signup">
                   <i className="fa-solid fa-user-plus"></i>&nbsp;
@@ -57,14 +75,10 @@ function Navbar() {
                 </NavLink>
               </>
             ) : (
-              <NavLink
-                className="btn btn-light"
-                onClick={() => setIsLogin(false)}
-                to={"/"}
-              >
+              <button className="btn btn-light" onClick={handleLogout}>
                 <i className="fa-solid fa-right-to-bracket"></i>&nbsp;
                 <b>Logout</b>
-              </NavLink>
+              </button>
             )}
           </div>
         </div>
@@ -72,4 +86,5 @@ function Navbar() {
     </nav>
   );
 }
+
 export default Navbar;

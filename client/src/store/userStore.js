@@ -1,8 +1,8 @@
 import { create } from "zustand";
 
 const useUserStore = create((set) => ({
-  isLogin: false,
-  setIsLogin: (isLogin) => set({ isLogin }),
+  session: {},
+  setAuthSession: (session) => set({ session })
 }));
 
 export default useUserStore;

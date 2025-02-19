@@ -7,8 +7,11 @@ import { v4 as uuidv4 } from "uuid";
 import path from "path";
 import { NODE_ENV } from "../config.js";
 import { User } from "./model/user.js";
+import dotenv from 'dotenv'
+import { supabase } from "./db/connect.js";
 
-import "./db/connect.js";
+
+dotenv.config({ path: '../.env' });
 
 const app = express();
 const port = 3001;
