@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom"; // If using React Router
-import "bootstrap/dist/css/bootstrap.min.css";
-import axios from "axios";
+import "bootstrap/dist/css/bootstrap.min.css"
 import { SERVER_URL } from "../../../config";
 import { supabase } from "../../../server/db/connect";
 import useUserStore from "../store/userStore"; // Corrected import
-const url = `${SERVER_URL}/api`;
 
 const Signup = () => {
   const [formData, setFormData] = useState({

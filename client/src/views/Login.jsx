@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom"; // If using React Router
 import "bootstrap/dist/css/bootstrap.min.css";
 import { supabase } from "../../../server/db/connect";

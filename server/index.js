@@ -25,7 +25,7 @@ const io = new Server(server, {
     origin: "*",
     methods: ["GET", "POST"],
   },
-  maxHttpBufferSize: 500000000, // 100Mb
+  maxHttpBufferSize: 500000000, // 500Mb
 });
 
 const files = {};
@@ -37,7 +37,7 @@ io.on("connection", (socket) => {
 
   socket.on("uploadFiles", ({ files: fileDataArray }) => {
     const fileId = uuidv4();
-    files[fileId] = { fileDataArray, uploaderId: socket.id }; // Store uploader's socket ID
+    files[fileId] = { fileDataArray, uploaderId: socket.id };
     socket.emit("filesUploaded", { fileId });
   });
 
@@ -58,6 +58,12 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log(`User disconnected: ${socket.id}`);
     delete activeUsers[socket.id];
+
+    for (const fileId in files) {
+      if (files[fileId].uploaderId === socket.id) {
+        io.emit("uploaderDisconnected", { fileId });
+      }
+    }
   });
 });
 
@@ -79,53 +85,6 @@ if (NODE_ENV === "production") {
     }
   });
 
-  app.post("/api/login", async (req, res) => {
-    const { username, password } = req.body;
-    try {
-      const user = await User.findOne({
-        username: username,
-        password: password,
-      });
-      if (user) {
-        res.cookie("username", username, { httpOnly: true , path: "/"});
-        res.cookie("password", password, { httpOnly: true , path: "/" });
-        res.status(200).send({ messaage: "User found" });
-      } else {
-        res.status(404).json({ message: "Not found" });
-      }
-    } catch (error) {
-      res.status(500).json({ message: "Server error" });
-    }
-  });
-  app.post("/api/signup", async (req, res) => {
-    const { fullName, username, email, password } = req.body;
-    try {
-      const newUser = new User({ fullName, username, email, password });
-      const validateEmail = await User.findOne({ email: email });
-      const validateUserName = await User.findOne({ username: username });
-      if (
-        validateEmail ||
-        validateUserName ||
-        (validateEmail && validateUserName)
-      ) {
-        res.status(409).json({ message: "Error: Entity already exists" });
-      } else {
-        const userSave = await newUser.save();
-        if (userSave) {
-          res.cookie('username', username, { httpOnly: true , path: "/" });
-          res.cookie('password', password, { httpOnly: true , path: "/" });
-          res.status(201).json({ message: "New User registered" });
-        } else {
-          res.status(503).json({ message: "Not available" });
-        }
-      }
-    } catch (error) {
-      res.status(500).json({ message: "Server error" });
-      console.log(error);
-    }
-  });
-
-  // Fix: Redirect all unknown routes to React's index.html
   app.get("*", (req, res) => {
     res.sendFile(path.resolve(__dirname1, "client", "dist", "index.html"));
   });

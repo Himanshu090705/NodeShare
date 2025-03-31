@@ -6,6 +6,8 @@ import Footer from "./views/Footer";
 import Login from "./views/Login";
 import Signup from "./views/Signup";
 import Home from "./views/Home";
+import Profile from "./views/Profile";
+import EditProfile from "./views/Edit";
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
           <Route path="/file/:id" element={<Download />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/edit" element={<EditProfile />} />
         </Routes>
       </main>
       <Footer />

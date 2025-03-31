@@ -1,15 +1,18 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import useUserStore from "../store/userStore";
 import { supabase } from "../../../server/db/connect";
 import { useEffect } from "react";
 
 function Navbar() {
   const session = useUserStore((state) => state.session);
+  const navigate = useNavigate();
   const setAuthSession = useUserStore((state) => state.setAuthSession);
 
   useEffect(() => {
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       setAuthSession(session);
     };
 
@@ -19,7 +22,11 @@ function Navbar() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setAuthSession(null);
+    navigate("/");
   };
+  const handleProfile = () => {
+    navigate("/profile")
+  }
 
   return (
     <nav className="navbar navbar-expand-lg sticky-top bg-body-tertiary">
@@ -75,10 +82,16 @@ function Navbar() {
                 </NavLink>
               </>
             ) : (
-              <button className="btn btn-light" onClick={handleLogout}>
-                <i className="fa-solid fa-right-to-bracket"></i>&nbsp;
-                <b>Logout</b>
-              </button>
+              <>
+                <button className="btn btn-light" onClick={handleLogout}>
+                  <i className="fa-solid fa-right-to-bracket"></i>&nbsp;
+                  <b>Logout</b>
+                </button>
+                <button className="btn btn-light" onClick={handleProfile}>
+                  <i className="fa-solid fa-user"></i>&nbsp;
+                  <b>Profile</b>
+                </button>
+              </>
             )}
           </div>
         </div>
