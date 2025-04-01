@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom"; // If using React Router
-import "bootstrap/dist/css/bootstrap.min.css"
+import "bootstrap/dist/css/bootstrap.min.css";
 import { SERVER_URL } from "../../../config";
 import { supabase } from "../../../server/db/connect";
 import useUserStore from "../store/userStore"; // Corrected import
@@ -39,28 +39,31 @@ const Signup = () => {
     e.preventDefault();
     const { fullName, email, password } = formData;
     try {
-      const {data, error} = await supabase.auth.signUp({
+      let { data, error } = await supabase.auth.signUp({
         displayName: fullName,
         email: email,
         password: password,
         options: {
           data: {
             displayName: fullName,
-          }
-        }
-      })
+          },
+        },
+      });
 
-      if (error.status === 422) {
-        window.alert("User already exists");
-        return { success: false, error };
-      }
+      const userId = data.user.id;
+      const plan = "free";
+      const payment_status = "completed";
+      const tokens = "50";
+      const response = await supabase
+        .from("subscriptions")
+        .insert({ userId, plan, tokens, payment_status });
 
-      if(data.user) {
-        navigate('/');
+
+      if (data.user) {
+        navigate("/");
       }
       return { success: true, data };
-    }
-    catch(error) {
+    } catch (error) {
       console.log(error);
     }
   };
@@ -72,9 +75,9 @@ const Signup = () => {
   };
   const signupWithGithub = async () => {
     await supabase.auth.signInWithOAuth({
-      provider: 'github',
-    })
-  }
+      provider: "github",
+    });
+  };
 
   if (!session) {
     return (
@@ -93,10 +96,7 @@ const Signup = () => {
             </p>
           </center>
 
-          <form
-            noValidate
-            onSubmit={handleSubmit}
-          >
+          <form noValidate onSubmit={handleSubmit}>
             {/* Username Field */}
             <div className="form-floating mb-3 mt-4">
               <input
@@ -169,7 +169,10 @@ const Signup = () => {
             <i className="fa-brands fa-google"></i>
           </button>
 
-          <button className="btn btn-light bg-dark text-white mt-3 w-100" onClick={signupWithGithub}>
+          <button
+            className="btn btn-light bg-dark text-white mt-3 w-100"
+            onClick={signupWithGithub}
+          >
             Sign up with GitHub &nbsp;&nbsp;
             <i className="fa-brands fa-github"></i>
           </button>

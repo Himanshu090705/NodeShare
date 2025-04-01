@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { supabase } from "../../../server/db/connect";
 
 function Profile() {
@@ -9,19 +9,29 @@ function Profile() {
   };
 
   const [data, setData] = useState(null);
+  const [plans, setPlans] = useState(null);
 
-  const render = useCallback(() => {
-    supabase.auth.getUser().then((response) => {
-      console.log(response.data);
-      setData(response.data);
-    });
+  const render = useCallback(async () => {
+    const userResponse = await supabase.auth.getUser();
+    setData(userResponse.data);
+
+    const subscriptionResponse = await supabase
+      .from("subscriptions")
+      .select()
+      .eq("userId", userResponse.data.user.id);
+
+    if (subscriptionResponse.data && subscriptionResponse.data.length > 0) {
+      setPlans(subscriptionResponse.data[0]);
+    } else {
+      console.error("No subscription found for this user.");
+    }
   }, []);
 
   useEffect(() => {
     render();
   }, [render]);
 
-  if (!data) {
+  if (!data || !plans) {
     return (
       <div className="container mt-5">
         <div
@@ -68,12 +78,14 @@ function Profile() {
           </div>
           <hr />
           <div className="mt-3">
-            <label className="form-label">Plan Type</label>
+            <label className="form-label">
+              Plan Type | <NavLink to="/subscriptions">Change Plan</NavLink>
+            </label>
             <input
               type="text"
               id="planType"
               className="form-control"
-              value="Premium"
+              value={plans?.plan}
               disabled
             />
           </div>
@@ -83,7 +95,7 @@ function Profile() {
               type="text"
               id="tokensLeft"
               className="form-control"
-              value="50"
+              value={plans?.tokens}
               disabled
             />
           </div>

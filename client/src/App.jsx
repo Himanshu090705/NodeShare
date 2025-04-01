@@ -8,6 +8,8 @@ import Signup from "./views/Signup";
 import Home from "./views/Home";
 import Profile from "./views/Profile";
 import EditProfile from "./views/Edit";
+import Subscriptions from "./views/Subscriptions";
+import Success from "./views/Success";
 
 function App() {
   return (
@@ -22,6 +24,8 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/edit" element={<EditProfile />} />
+          <Route path="/subscriptions" element={<Subscriptions />} />
+          <Route path="/success" element={<Success />} />
         </Routes>
       </main>
       <Footer />
