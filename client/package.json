@@ -20,6 +20,7 @@
     "react-dropzone": "^14.3.5",
     "react-qr-code": "^2.0.15",
     "react-router-dom": "^7.1.5",
+    "server": "file:..",
     "socket.io-client": "^4.8.1",
     "uuid": "^11.0.5",
     "zustand": "^5.0.2"
