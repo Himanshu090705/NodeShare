@@ -71,7 +71,7 @@ function Subscriptions() {
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ priceId }),
+            body: JSON.stringify({ priceId: priceId, name: name }),
           }
         );
 
