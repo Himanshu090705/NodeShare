@@ -12,25 +12,25 @@ import Subscriptions from "./views/Subscriptions";
 import Success from "./views/Success";
 
 function App() {
-  return (
-    <div className="d-flex flex-column min-vh-100">
-      <Navbar />
-      <main className="flex-grow-1">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/upload" element={<Upload />} />
-          <Route path="/file/:id" element={<Download />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/edit" element={<EditProfile />} />
-          <Route path="/subscriptions" element={<Subscriptions />} />
-          <Route path="/success" element={<Success />} />
-        </Routes>
-      </main>
-      <Footer />
-    </div>
-  );
+    return (
+        <div className="d-flex flex-column min-vh-100">
+            <Navbar />
+            <main className="flex-grow-1">
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/upload" element={<Upload />} />
+                    <Route path="/file/:id" element={<Download />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/signup" element={<Signup />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/edit" element={<EditProfile />} />
+                    <Route path="/subscriptions" element={<Subscriptions />} />
+                    <Route path="/success" element={<Success />} />
+                </Routes>
+            </main>
+            <Footer />
+        </div>
+    );
 }
 
 export default App;

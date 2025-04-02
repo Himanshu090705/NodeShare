@@ -14,7 +14,7 @@ import { url } from "inspector";
 ("stripe");
 
 const stripe = new Stripe(
-  "sk_test_51R9845ERYVwyvKr58YsOnePqH52oI9syGj7O8n2bHFc3dqPYpQNvwy8bh9YGRakcrEixf3gVDWTv5sOYrhVV4MbJ00ncDCSsfa"
+    "sk_test_51R9845ERYVwyvKr58YsOnePqH52oI9syGj7O8n2bHFc3dqPYpQNvwy8bh9YGRakcrEixf3gVDWTv5sOYrhVV4MbJ00ncDCSsfa"
 );
 
 dotenv.config({ path: "../.env" });
@@ -22,123 +22,123 @@ dotenv.config({ path: "../.env" });
 const app = express();
 const port = 3001;
 app.use(
-  cors({
-    origin: "*", // Change this to your frontend URL
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type"],
-  })
+    cors({
+        origin: "*", // Change this to your frontend URL
+        methods: ["GET", "POST"],
+        allowedHeaders: ["Content-Type"],
+    })
 );
 app.use(express.json());
 app.use(cookieParser());
 
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-  },
-  maxHttpBufferSize: 500000000, // 500Mb
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"],
+    },
+    maxHttpBufferSize: 500000000, // 500Mb
 });
 
 const files = {};
 const activeUsers = {};
 
 io.on("connection", (socket) => {
-  console.log(`User connected: ${socket.id}`);
-  activeUsers[socket.id] = true;
+    console.log(`User connected: ${socket.id}`);
+    activeUsers[socket.id] = true;
 
-  socket.on("uploadFiles", ({ files: fileDataArray }) => {
-    const fileId = uuidv4();
-    files[fileId] = { fileDataArray, uploaderId: socket.id };
-    socket.emit("filesUploaded", { fileId });
-  });
+    socket.on("uploadFiles", ({ files: fileDataArray }) => {
+        const fileId = uuidv4();
+        files[fileId] = { fileDataArray, uploaderId: socket.id };
+        socket.emit("filesUploaded", { fileId });
+    });
 
-  socket.on("downloadFile", ({ fileId }) => {
-    if (files[fileId]) {
-      const { uploaderId } = files[fileId];
+    socket.on("downloadFile", ({ fileId }) => {
+        if (files[fileId]) {
+            const { uploaderId } = files[fileId];
 
-      if (activeUsers[uploaderId]) {
-        socket.emit("receiveFiles", files[fileId]);
-      } else {
-        socket.emit("fileNotAvailable", "Uploader is not connected.");
-      }
-    } else {
-      socket.emit("fileNotFound", "File not found.");
-    }
-  });
+            if (activeUsers[uploaderId]) {
+                socket.emit("receiveFiles", files[fileId]);
+            } else {
+                socket.emit("fileNotAvailable", "Uploader is not connected.");
+            }
+        } else {
+            socket.emit("fileNotFound", "File not found.");
+        }
+    });
 
-  socket.on("disconnect", () => {
-    console.log(`User disconnected: ${socket.id}`);
-    delete activeUsers[socket.id];
+    socket.on("disconnect", () => {
+        console.log(`User disconnected: ${socket.id}`);
+        delete activeUsers[socket.id];
 
-    for (const fileId in files) {
-      if (files[fileId].uploaderId === socket.id) {
-        io.emit("uploaderDisconnected", { fileId });
-      }
-    }
-  });
+        for (const fileId in files) {
+            if (files[fileId].uploaderId === socket.id) {
+                io.emit("uploaderDisconnected", { fileId });
+            }
+        }
+    });
 });
 
 const __dirname1 = path.resolve();
 if (NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname1, "/client/dist")));
+    app.use(express.static(path.join(__dirname1, "/client/dist")));
 
-  app.get("/api/file/:id", (req, res) => {
-    const { id } = req.params;
-    if (files[id]) {
-      const { uploaderId } = files[id];
-      if (activeUsers[uploaderId]) {
-        res.json({ files: files[id].fileDataArray });
-      } else {
-        res.status(403).json({ error: "Uploader is not connected" });
-      }
-    } else {
-      res.status(404).json({ error: "File not found" });
-    }
-  });
+    app.get("/api/file/:id", (req, res) => {
+        const { id } = req.params;
+        if (files[id]) {
+            const { uploaderId } = files[id];
+            if (activeUsers[uploaderId]) {
+                res.json({ files: files[id].fileDataArray });
+            } else {
+                res.status(403).json({ error: "Uploader is not connected" });
+            }
+        } else {
+            res.status(404).json({ error: "File not found" });
+        }
+    });
 
-  app.post("/create-checkout-session", async (req, res) => {
-    try {
-      const { priceId } = req.body;
-      const session = await stripe.checkout.sessions.create({
-        mode: "subscription",
-        payment_method_types: ["card"],
-        line_items: [{ price: priceId, quantity: 1 }],
-        success_url: `http://localhost:3001/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `http://localhost:3001/cancel`,
-      });
-      res.status(200).json({ url: session.url });
-    } catch (error) {
-      console.log(error);
-    }
-  });
+    app.post("/create-checkout-session", async (req, res) => {
+        try {
+            const { priceId } = req.body;
+            const session = await stripe.checkout.sessions.create({
+                mode: "subscription",
+                payment_method_types: ["card"],
+                line_items: [{ price: priceId, quantity: 1 }],
+                success_url: `http://localhost:3001/success?session_id={CHECKOUT_SESSION_ID}`,
+                cancel_url: `http://localhost:3001/cancel`,
+            });
+            res.status(200).json({ url: session.url });
+        } catch (error) {
+            console.log(error);
+        }
+    });
 
-  app.get("/payment-status", async (req, res) => {
-    try {
-      const { session_id } = req.query;
-      if (!session_id) {
-        return res.status(400).json({ error: "Missing session_id" });
-      }
+    app.get("/payment-status", async (req, res) => {
+        try {
+            const { session_id } = req.query;
+            if (!session_id) {
+                return res.status(400).json({ error: "Missing session_id" });
+            }
 
-      const session = await stripe.checkout.sessions.retrieve(session_id);
-      console.log(session);
-      res.json({
-        id: session.id,
-        status: session.payment_status, // "paid" or "unpaid"
-        amount_total: session.amount_total,
-        currency: session.currency,
-        customer_email: session.customer_details?.email || "N/A",
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  });
+            const session = await stripe.checkout.sessions.retrieve(session_id);
+            console.log(session);
+            res.json({
+                id: session.id,
+                status: session.payment_status, // "paid" or "unpaid"
+                amount_total: session.amount_total,
+                currency: session.currency,
+                customer_email: session.customer_details?.email || "N/A",
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    });
 
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname1, "client", "dist", "index.html"));
-  });
+    app.get("*", (req, res) => {
+        res.sendFile(path.resolve(__dirname1, "client", "dist", "index.html"));
+    });
 }
 
 server.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+    console.log(`Server running at http://localhost:${port}`);
 });
