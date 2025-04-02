@@ -18,8 +18,7 @@ function Download() {
     const fetchFiles = async () => {
       try {
         const res = await axios.get(`${url}/file/${id}`);
-        console.log(res.data);
-        setFiles(res.data.files || [])
+        setFiles(res.data.files || []);
         socket.emit("downloadFile", { fileId: id });
       } catch (err) {
         setError("Files not available or uploader is disconnected.");
@@ -38,9 +37,17 @@ function Download() {
       setFiles([]);
     });
 
+    socket.on("uploaderDisconnected", ({ fileId }) => {
+      if (fileId === id) {
+        setError("Uploader has disconnected.");
+        setFiles([]);
+      }
+    });
+
     return () => {
       socket.off("fileNotAvailable");
       socket.off("fileNotFound");
+      socket.off("uploaderDisconnected");
       socket.disconnect();
     };
   }, [id]);

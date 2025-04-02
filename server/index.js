@@ -5,14 +5,36 @@ import http from "http";
 import cookieParser from "cookie-parser";
 import { v4 as uuidv4 } from "uuid";
 import path from "path";
+<<<<<<< HEAD
 import { NODE_ENV } from "../config.js";
 import { User } from "./model/user.js";
 
 import "./db/connect.js";
+=======
+import { NODE_ENV, SECRET } from "../config.js";
+import { User } from "./model/user.js";
+import dotenv from "dotenv";
+import { supabase } from "./db/connect.js";
+import Stripe from "stripe";
+import { url } from "inspector";
+("stripe");
+
+const stripe = new Stripe(
+  "sk_test_51R9845ERYVwyvKr58YsOnePqH52oI9syGj7O8n2bHFc3dqPYpQNvwy8bh9YGRakcrEixf3gVDWTv5sOYrhVV4MbJ00ncDCSsfa"
+);
+
+dotenv.config({ path: "../.env" });
+>>>>>>> 28e6fdf48fdfdb7390e0687af8e65b096a5830eb
 
 const app = express();
 const port = 3001;
-app.use(cors());
+app.use(
+  cors({
+    origin: "*", // Change this to your frontend URL
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"],
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 
@@ -22,7 +44,7 @@ const io = new Server(server, {
     origin: "*",
     methods: ["GET", "POST"],
   },
-  maxHttpBufferSize: 1e8, // 100Mb
+  maxHttpBufferSize: 500000000, // 500Mb
 });
 
 const files = {};
@@ -34,7 +56,7 @@ io.on("connection", (socket) => {
 
   socket.on("uploadFiles", ({ files: fileDataArray }) => {
     const fileId = uuidv4();
-    files[fileId] = { fileDataArray, uploaderId: socket.id }; // Store uploader's socket ID
+    files[fileId] = { fileDataArray, uploaderId: socket.id };
     socket.emit("filesUploaded", { fileId });
   });
 
@@ -55,6 +77,12 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log(`User disconnected: ${socket.id}`);
     delete activeUsers[socket.id];
+
+    for (const fileId in files) {
+      if (files[fileId].uploaderId === socket.id) {
+        io.emit("uploaderDisconnected", { fileId });
+      }
+    }
   });
 });
 
@@ -76,6 +104,7 @@ if (NODE_ENV === "production") {
     }
   });
 
+<<<<<<< HEAD
   app.post("/api/login", async (req, res) => {
     const { username, password } = req.body;
     try {
@@ -118,11 +147,49 @@ if (NODE_ENV === "production") {
       }
     } catch (error) {
       res.status(500).json({ message: "Server error" });
+=======
+  app.post("/create-checkout-session", async (req, res) => {
+    try {
+      const { priceId } = req.body;
+      const session = await stripe.checkout.sessions.create({
+        mode: "subscription",
+        payment_method_types: ["card"],
+        line_items: [{ price: priceId, quantity: 1 }],
+        success_url: `http://localhost:3001/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `http://localhost:3001/cancel`,
+      });
+      res.status(200).json({ url: session.url });
+    } catch (error) {
       console.log(error);
     }
   });
 
+  app.get("/payment-status", async (req, res) => {
+    try {
+      const { session_id } = req.query;
+      if (!session_id) {
+        return res.status(400).json({ error: "Missing session_id" });
+      }
+
+      const session = await stripe.checkout.sessions.retrieve(session_id);
+      console.log(session);
+      res.json({
+        id: session.id,
+        status: session.payment_status, // "paid" or "unpaid"
+        amount_total: session.amount_total,
+        currency: session.currency,
+        customer_email: session.customer_details?.email || "N/A",
+      });
+    } catch (error) {
+>>>>>>> 28e6fdf48fdfdb7390e0687af8e65b096a5830eb
+      console.log(error);
+    }
+  });
+
+<<<<<<< HEAD
   // Fix: Redirect all unknown routes to React's index.html
+=======
+>>>>>>> 28e6fdf48fdfdb7390e0687af8e65b096a5830eb
   app.get("*", (req, res) => {
     res.sendFile(path.resolve(__dirname1, "client", "dist", "index.html"));
   });
