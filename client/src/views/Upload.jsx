@@ -4,18 +4,18 @@ import { QRCode } from "react-qr-code";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { SERVER_URL } from "../../../config";
+import { supabase } from "../../../server/db/connect";
 
 function Upload() {
   const [fileId, setFileId] = useState("");
   const [files, setFiles] = useState([]);
-
+  
   useEffect(() => {
     socket.connect();
 
     const onFilesUploaded = ({ fileId }) => {
       setFileId(fileId);
     };
-
     socket.on("filesUploaded", onFilesUploaded);
 
     return () => {
@@ -40,7 +40,15 @@ function Upload() {
     e.preventDefault();
   };
 
-  const uploadFiles = (filesToUpload) => {
+  const uploadFiles = async (filesToUpload) => {
+    const user = await supabase.auth.getUser();
+    const id = user.data.user.id;
+    const subscriptions = await supabase
+      .from("subscriptions")
+      .select()
+      .eq("userId", id);
+    const data = subscriptions.data[0];
+
     const fileDataArray = filesToUpload.map((file) => {
       const reader = new FileReader();
       return new Promise((resolve) => {
@@ -57,6 +65,17 @@ function Upload() {
     Promise.all(fileDataArray).then((fileData) => {
       socket.emit("uploadFiles", { files: fileData });
     });
+
+    // console.log(filesToUpload);
+    if (data.tokens !== "Unlimited") {
+      let tokens = Number.parseInt(data.tokens, 10); // Convert tokens to a number
+      tokens = tokens - filesToUpload.length;
+      const response = await supabase
+        .from("subscriptions")
+        .update({ tokens: tokens.toString() })
+        .eq("userId", id);
+      console.log(response);
+    }
   };
 
   const handleCopyLink = () => {

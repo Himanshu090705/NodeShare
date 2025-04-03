@@ -50,22 +50,10 @@ function Subscriptions() {
   ];
   async function handleSubscribePlan(name, tokens, priceId) {
     try {
-      if (name === "Free") {
-        const user = await supabase.auth.getUser();
-        const id = user.data.user.id;
-
-        const response = await supabase
-          .from("subscriptions")
-          .update({ plan: "Free", tokens: "50" })
-          .eq("userId", id)
-          .select();
-
-        if(response) {
-          window.alert("Plan changed");
-          navigate('/profile');
-        } 
-          
-      } else {
+      if(name === "Free") {
+        window.alert("You cannot upgrade to this plan");
+      }
+      if (name !== "Free") {
         const res = await fetch(
           "http://localhost:3001/create-checkout-session",
           {
