@@ -7,200 +7,213 @@ import { SERVER_URL } from "../../../config";
 import { supabase } from "../../../server/db/connect";
 
 function Upload() {
-  const [fileId, setFileId] = useState("");
-  const [files, setFiles] = useState([]);
-  
-  useEffect(() => {
-    socket.connect();
+    const [fileId, setFileId] = useState("");
+    const [files, setFiles] = useState([]);
 
-    const onFilesUploaded = ({ fileId }) => {
-      setFileId(fileId);
-    };
-    socket.on("filesUploaded", onFilesUploaded);
+    useEffect(() => {
+        socket.connect();
 
-    return () => {
-      socket.off("filesUploaded", onFilesUploaded);
-    };
-  }, []);
-
-  const handleFileUpload = (e) => {
-    const selectedFiles = Array.from(e.target.files);
-    setFiles(selectedFiles);
-    uploadFiles(selectedFiles);
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    const droppedFiles = Array.from(e.dataTransfer.files);
-    setFiles(droppedFiles);
-    uploadFiles(droppedFiles);
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
-
-  const uploadFiles = async (filesToUpload) => {
-    const user = await supabase.auth.getUser();
-    const id = user.data.user.id;
-    const subscriptions = await supabase
-      .from("subscriptions")
-      .select()
-      .eq("userId", id);
-    const data = subscriptions.data[0];
-
-    const fileDataArray = filesToUpload.map((file) => {
-      const reader = new FileReader();
-      return new Promise((resolve) => {
-        reader.onload = (event) => {
-          resolve({
-            fileName: file.name,
-            fileData: event.target.result,
-          });
+        const onFilesUploaded = ({ fileId }) => {
+            setFileId(fileId);
         };
-        reader.readAsDataURL(file);
-      });
-    });
+        socket.on("filesUploaded", onFilesUploaded);
 
-    Promise.all(fileDataArray).then((fileData) => {
-      socket.emit("uploadFiles", { files: fileData });
-    });
+        return () => {
+            socket.off("filesUploaded", onFilesUploaded);
+        };
+    }, []);
 
-    // console.log(filesToUpload);
-    if (data.tokens !== "Unlimited") {
-      let tokens = Number.parseInt(data.tokens, 10); // Convert tokens to a number
-      tokens = tokens - filesToUpload.length;
-      const response = await supabase
-        .from("subscriptions")
-        .update({ tokens: tokens.toString() })
-        .eq("userId", id);
-      console.log(response);
-    }
-  };
+    const handleFileUpload = (e) => {
+        const selectedFiles = Array.from(e.target.files);
+        setFiles(selectedFiles);
+        uploadFiles(selectedFiles);
+    };
 
-  const handleCopyLink = () => {
-    const link = `${SERVER_URL}/file/${fileId}`;
-    navigator.clipboard.writeText(link);
-    document.getElementById("copy-button").innerText = "Copied!";
-    document.getElementById("copy-button").classList.remove("btn-primary");
-    document.getElementById("copy-button").classList.add("btn-success");
-  };
+    const handleDrop = (e) => {
+        e.preventDefault();
+        const droppedFiles = Array.from(e.dataTransfer.files);
+        setFiles(droppedFiles);
+        uploadFiles(droppedFiles);
+    };
 
-  return (
-    <div className="container mt-5">
-      <div className="row justify-content-between">
-        <div className="col-12 col-md-5 mb-4 mt-5">
-          <div
-            className="card shadow p-4"
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-          >
-            <h4 className="text-center mb-3">Transfer Files</h4>
-            <input
-              type="file"
-              className="form-control mb-3"
-              multiple
-              onChange={handleFileUpload}
-            />
+    const handleDragOver = (e) => {
+        e.preventDefault();
+    };
 
-            {fileId && (
-              <div className="alert alert-success mt-3" role="alert">
-                <strong>Files are ready to send!</strong>
-                <div className="mt-2">
-                  <small>Share this link:</small>
-                  <div className="input-group">
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={`${SERVER_URL}/file/${fileId}`}
-                      readOnly
-                    />
-                    <button
-                      className="btn btn-primary"
-                      onClick={handleCopyLink}
-                      id="copy-button"
+    const uploadFiles = async (filesToUpload) => {
+        const user = await supabase.auth.getUser();
+        const id = user.data.user.id;
+        const subscriptions = await supabase
+            .from("subscriptions")
+            .select()
+            .eq("userId", id);
+        const data = subscriptions.data[0];
+
+        const fileDataArray = filesToUpload.map((file) => {
+            const reader = new FileReader();
+            return new Promise((resolve) => {
+                reader.onload = (event) => {
+                    resolve({
+                        fileName: file.name,
+                        fileData: event.target.result,
+                    });
+                };
+                reader.readAsDataURL(file); // Ensure this is called
+            });
+        });
+
+        Promise.all(fileDataArray).then((fileData) => {
+            socket.emit("uploadFiles", { files: fileData });
+        });
+
+        if (data.tokens !== "Unlimited") {
+            let tokens = Number.parseInt(data.tokens, 10); // Convert tokens to a number
+            tokens = tokens - filesToUpload.length;
+            const response = await supabase
+                .from("subscriptions")
+                .update({ tokens: tokens.toString() })
+                .eq("userId", id);
+            console.log(response);
+        }
+    };
+
+    const handleCopyLink = () => {
+        const link = `${SERVER_URL}/file/${fileId}`;
+        navigator.clipboard.writeText(link);
+        document.getElementById("copy-button").innerText = "Copied!";
+        document.getElementById("copy-button").classList.remove("btn-primary");
+        document.getElementById("copy-button").classList.add("btn-success");
+    };
+
+    return (
+        <div className="container mt-5">
+            <div className="row justify-content-between">
+                <div className="upload-box col-12 col-md-5">
+                    <div
+                        className="card shadow p-4"
+                        onDrop={handleDrop}
+                        onDragOver={handleDragOver}
                     >
-                      Copy
-                    </button>
-                  </div>
-                  <div className="mt-2 border p-1">
-                    <center>
-                      <small>Or Scan this QR Code</small>
-                      <div>
-                        <QRCode
-                          size={256}
-                          style={{
-                            height: "8rem",
-                            width: "8rem",
-                          }}
-                          value={`${SERVER_URL}/file/${fileId}`}
-                          viewBox={`0 0 256 256`}
+                        <h4 className="text-center mb-3">Transfer Files</h4>
+                        <input
+                            type="file"
+                            className="form-control mb-3"
+                            multiple
+                            onChange={handleFileUpload}
                         />
-                      </div>
-                    </center>
-                  </div>
-                </div>
-              </div>
-            )}
-            <center>
-              <b>You can drag and drop multiple files also</b>
-            </center>
-          </div>
-        </div>
-        <div className="col-12 col-md-5 mt-5">
-          {fileId ? (
-            <>
-              <h1>Now sharing your files directly from your device</h1>
-              <p className="fs-5 mt-5">
-                ⚠️ Please note: Closing this page means you stop sharing! Simply
-                keep this page open in the background to keep sharing.
-              </p>
-            </>
-          ) : (
-            <>
-              <h1>Share files directly from your device to anywhere</h1>
-              <p className="fs-5 mt-5">
-                Transfer files directly from your device to another without
-                uploading or storing anything online, ensuring full privacy and
-                security.
-              </p>
-            </>
-          )}
 
-          <table className="table mt-4 ">
-            <tbody>
-              <tr style={{ height: "50px" }}>
-                <td className="w-12">
-                  <h5>
-                    <i className="fa-solid fa-infinity"></i> No file size limit
-                  </h5>
-                </td>
-                <td className="w-12">
-                  <h5>
-                    <i className="fa-solid fa-bolt"></i> Blazingly fast
-                  </h5>
-                </td>
-              </tr>
-              <tr className="mt-5" style={{ height: "50px" }}>
-                <td className="w-2">
-                  <h5>
-                    <i className="fa-solid fa-right-left"></i> Peer-to-peer
-                  </h5>
-                </td>
-                <td className="w-2">
-                  <h5>
-                    <i className="fa-solid fa-file-invoice"></i>
-                    {"  "}
-                    End-to-end encrypted
-                  </h5>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                        {fileId && (
+                            <div
+                                className="alert alert-success mt-3"
+                                role="alert"
+                            >
+                                <strong>Files are ready to send!</strong>
+                                <div className="mt-2">
+                                    <small>Share this link:</small>
+                                    <div className="input-group">
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={`${SERVER_URL}/file/${fileId}`}
+                                            readOnly
+                                        />
+                                        <button
+                                            className="btn btn-primary"
+                                            onClick={handleCopyLink}
+                                            id="copy-button"
+                                        >
+                                            Copy
+                                        </button>
+                                    </div>
+                                    <div className="mt-2 border p-1">
+                                        <center>
+                                            <small>Or Scan this QR Code</small>
+                                            <div>
+                                                <QRCode
+                                                    size={256}
+                                                    style={{
+                                                        height: "8rem",
+                                                        width: "8rem",
+                                                    }}
+                                                    value={`${SERVER_URL}/file/${fileId}`}
+                                                    viewBox={`0 0 256 256`}
+                                                />
+                                            </div>
+                                        </center>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        <center>
+                            <b>You can drag and drop multiple files also</b>
+                        </center>
+                    </div>
+                </div>
+                <div className="upload-box col-12 col-md-5">
+                    {fileId ? (
+                        <>
+                            <h1>
+                                Now sharing your files directly from your device
+                            </h1>
+                            <p className="fs-5 mt-5 text-secondary">
+                                ⚠️ Please note: Closing this page means you stop
+                                sharing! Simply keep this page open in the
+                                background to keep sharing.
+                            </p>
+                        </>
+                    ) : (
+                        <>
+                            <h1>
+                                Share files directly from your device to
+                                anywhere
+                            </h1>
+                            <p className="fs-5 mt-5 text-secondary">
+                                Transfer files directly from your device to
+                                another without uploading or storing anything
+                                online, ensuring full privacy and security.
+                            </p>
+                        </>
+                    )}
+
+                    <div className="border rounded bg-white mt-5 p-0">
+                        <table className="table-box table mt-1 mb-1">
+                            <tbody className="text-white bg-black ">
+                                <tr>
+                                    <td>
+                                        <h5>
+                                            <i className="fa-solid fa-infinity"></i>{" "}
+                                            No file size limit
+                                        </h5>
+                                    </td>
+                                    <td className="">
+                                        <h5>
+                                            <i className="fa-solid fa-bolt"></i>{" "}
+                                            Blazingly fast
+                                        </h5>
+                                    </td>
+                                </tr>
+                                <tr className="mt-5">
+                                    <td className="">
+                                        <h5>
+                                            <i className="fa-solid fa-right-left"></i>{" "}
+                                            Peer-to-peer
+                                        </h5>
+                                    </td>
+                                    <td className="">
+                                        <h5>
+                                            <i className="fa-solid fa-file-invoice"></i>
+                                            {"  "}
+                                            End-to-end encrypted
+                                        </h5>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 }
 
 export default Upload;

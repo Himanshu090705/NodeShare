@@ -10,6 +10,8 @@ import Profile from "./views/Profile";
 import EditProfile from "./views/Edit";
 import Subscriptions from "./views/Subscriptions";
 import Success from "./views/Success";
+import Convert from "./views/Convert";
+import "./index.css";
 
 function App() {
     return (
@@ -26,6 +28,7 @@ function App() {
                     <Route path="/edit" element={<EditProfile />} />
                     <Route path="/subscriptions" element={<Subscriptions />} />
                     <Route path="/success" element={<Success />} />
+                    <Route path="/convert" element={<Convert />} />
                 </Routes>
             </main>
             <Footer />
