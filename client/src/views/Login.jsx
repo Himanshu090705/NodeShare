@@ -6,6 +6,7 @@ import useUserStore from "../store/userStore";
 
 const Login = () => {
     const [formData, setFormData] = useState({ email: "", password: "" });
+    const [errorMessage, setErrorMessage] = useState(""); // State for error messages
     const setAuthSession = useUserStore((state) => state.setAuthSession);
     const session = useUserStore((state) => state.session);
     const navigate = useNavigate();
@@ -24,7 +25,8 @@ const Login = () => {
             });
 
             if (error) {
-                console.error("There is a problem in login");
+                console.error("Login error:", error.message);
+                setErrorMessage(error.message); // Set the error message in state
                 return { success: false, error };
             }
 
@@ -34,14 +36,15 @@ const Login = () => {
             }
             return { success: true, data };
         } catch (error) {
-            console.log(error);
+            console.error("Unexpected error:", error.message);
+            setErrorMessage("An unexpected error occurred. Please try again."); // Handle unexpected errors
         }
     };
 
     if (!session) {
         return (
-            <div className="container d-flex justify-content-center align-items-center min-vh-80 mt-5">
-                <div className="col-10 col-md-6 col-lg-4 py-5 px-4 border border-5 rounded shadow-sm  mt-5">
+            <div className=" container d-flex justify-content-center align-items-center min-vh-80 mt-5">
+                <div className="login-box col-10 col-md-6 col-lg-4 py-5 px-4 rounded shadow-sm">
                     <center>
                         <div className="login-logo">
                             <i className="fa-solid fa-right-to-bracket fa-3x"></i>
@@ -55,8 +58,14 @@ const Login = () => {
                         </p>
                     </center>
 
+                    {errorMessage && (
+                        <div className="alert alert-danger text-white text-center mt-3">
+                            {errorMessage}
+                        </div>
+                    )}
+
                     <form noValidate onSubmit={handleSubmit}>
-                        <div className="form-floating mb-3 mt-5">
+                        <div className="form-floating text-black mb-3 mt-5">
                             <input
                                 type="email"
                                 name="email"
@@ -74,12 +83,12 @@ const Login = () => {
                                 <i className="fa-solid fa-envelope"></i>
                                 &nbsp;Email
                             </label>
-                            <div className="invalid-feedback">
+                            <div className="invalid-feedback text-danger">
                                 Please provide a valid Email!
                             </div>
                         </div>
 
-                        <div className="form-floating mb-3">
+                        <div className="form-floating text-black mb-3">
                             <input
                                 type="password"
                                 name="password"
@@ -102,7 +111,7 @@ const Login = () => {
                             </div>
                         </div>
 
-                        <button className="btn btn-light form-control">
+                        <button className="btn btn-light p-2 form-control">
                             Get Started &nbsp;&nbsp;
                             <i className="fa-solid fa-arrow-right"></i>
                         </button>

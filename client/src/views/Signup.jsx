@@ -81,7 +81,7 @@ const Signup = () => {
     if (!session) {
         return (
             <div className="container d-flex justify-content-center align-items-center min-vh-80 mt-5">
-                <div className="col-10 col-md-6 col-lg-4 py-5 px-4 border border-5 rounded shadow-sm  mt-5">
+                <div className="login-box col-10 col-md-6 col-lg-4 py-5 px-4 rounded shadow-sm">
                     <center>
                         <div className="login-logo">
                             <i className="fa-solid fa-user-plus fa-3x"></i>
@@ -112,7 +112,7 @@ const Signup = () => {
                             />
                             <label
                                 htmlFor="floatingName"
-                                className="form-label"
+                                className="form-label  text-black"
                             >
                                 <i className="fa-solid fa-user"></i>&nbsp;Full
                                 Name
@@ -134,7 +134,7 @@ const Signup = () => {
                             />
                             <label
                                 htmlFor="floatingEmail"
-                                className="form-label"
+                                className="form-label  text-black"
                             >
                                 <i className="fa-solid fa-envelope"></i>
                                 &nbsp;E-Mail
@@ -158,7 +158,7 @@ const Signup = () => {
                             />
                             <label
                                 htmlFor="floatingPassword"
-                                className="form-label"
+                                className="form-label  text-black"
                             >
                                 <i className="fa-solid fa-lock"></i>
                                 &nbsp;Password
