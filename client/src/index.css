@@ -204,7 +204,7 @@ body {
 
 /* Convert header styles */
 .convert-header {
-  width:70%;
+  width: 70%;
   /* max-width: 1050px; */
   background-color: #1f2937;
   padding: 2rem 0;
@@ -370,6 +370,49 @@ body {
 
 .convert-supported-section ul li {
   margin-bottom: 0.75rem;
+}
+
+/* Pricing Section */
+.pricing-header {
+  width: 70%;
+  /* max-width: 1050px; */
+  background-color: #1f2937;
+  padding: 2rem 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  margin: 4rem auto 0rem;
+  border-radius: 0.75rem;
+}
+
+/* Container for pricing sections */
+.pricing-container {
+  display: flex;
+  justify-content: space-between;
+  /* Space between the sections */
+  gap: 1rem;
+  /* Add spacing between columns */
+  margin: 2rem auto;
+  /* Center the container */
+  max-width: 1200px;
+  /* Limit the container width */
+}
+
+/* Individual pricing section */
+.pricing-section {
+  flex: 1;
+  /* Make all sections equal width */
+  background-color: #1f2937;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  margin: 0;
+  /* Remove margin to avoid extra spacing */
+  border-radius: 0.75rem;
+  border-color: #1f2937;
+}
+
+.bg-color-style {
+  background-color: #1f2937;
 }
 
 .fa-google {
