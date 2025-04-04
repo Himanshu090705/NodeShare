@@ -13,7 +13,7 @@ const Convert = () => {
         "image/png": ["jpeg", "heic", "webp", "pdf", "svg"],
         "image/heic": ["jpeg", "png", "webp", "svg"],
         "image/webp": ["png", "jpeg", "pdf", "svg", "heic"],
-        "image/svg+xml": ["webp", "jpeg", "png", "heic"],
+        "image/svg+xml": ["webp", "png",],
         "application/octet-stream": ["jpeg", "png", "webp", "pdf", "svg"],
         "video/mp4": ["mp3", "wav"],
         "audio/mpeg": ["wav"],

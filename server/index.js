@@ -21,6 +21,7 @@ import xml2js from "xml2js";
 import pdfParse from "pdf-parse";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import { exec } from "child_process";
 
 const stripe = new Stripe(SECRET);
 
@@ -170,15 +171,6 @@ if (NODE_ENV === "production") {
             if (!file)
                 return res.status(400).json({ error: "No file uploaded" });
 
-            console.log("File uploaded:", req.file);
-            console.log("Target format:", req.body.format);
-            console.log("File MIME type:", req.file.mimetype);
-            console.log("Input file path:", req.file.path);
-
-            console.log("Uploaded file details:", file);
-            console.log("Uploaded file MIME type:", file.mimetype);
-            console.log("Target format:", targetFormat);
-
             const supportedFormats = [
                 "mp3",
                 "wav",
@@ -197,6 +189,8 @@ if (NODE_ENV === "production") {
                 "image/heic",
                 "image/webp",
                 "image/svg+xml",
+                "application/msword",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             ];
             if (!supportedFormats.includes(targetFormat)) {
                 return res
@@ -206,8 +200,42 @@ if (NODE_ENV === "production") {
 
             const inputPath = file.path;
 
+            // Handle PDF to DOCX conversion using Python script
+            if (
+                targetFormat === "docx" &&
+                file.mimetype === "application/pdf"
+            ) {
+                try {
+                    const command = `python pdf2doc.py ${inputPath} ${path.join(
+                        convertedDir,
+                        "output.docx"
+                    )}`;
+                    exec(command, (error, stdout, stderr) => {
+                        if (error) {
+                            console.error(
+                                `Error during conversion: ${error.message}`
+                            );
+                            return res
+                                .status(500)
+                                .json({ error: "Conversion failed" });
+                        }
+                        res.download(path.join(convertedDir, "output.docx"));
+                    });
+                } catch (err) {
+                    console.error(
+                        "Error during PDF to DOCX conversion:",
+                        err.message
+                    );
+                    res.status(500).json({
+                        error: "PDF to DOCX conversion failed",
+                    });
+                }
+            }
             // Handle PDF to JPG conversion
-            if (targetFormat === "jpg" && file.mimetype === "application/pdf") {
+            else if (
+                targetFormat === "jpg" &&
+                file.mimetype === "application/pdf"
+            ) {
                 try {
                     const options = {
                         format: "jpeg",
@@ -1530,6 +1558,152 @@ if (NODE_ENV === "production") {
                     );
                     res.status(500).json({
                         error: "TXT to PDF conversion failed",
+                    });
+                }
+            }
+            // Handle PDF to DOCX and DOCX to PDF conversion
+            else if (
+                (targetFormat === "docx" &&
+                    file.mimetype === "application/pdf") ||
+                (targetFormat === "pdf" &&
+                    file.mimetype ===
+                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+            ) {
+                try {
+                    const outputDir = convertedDir; // Directory where LibreOffice saves the converted file
+                    const expectedOutputFileName = `${path.basename(
+                        inputPath,
+                        path.extname(inputPath)
+                    )}.${targetFormat}`;
+                    const expectedOutputPath = path.join(
+                        outputDir,
+                        expectedOutputFileName
+                    );
+
+                    const command = `soffice --headless --convert-to ${targetFormat} --outdir "${outputDir}" "${inputPath}"`;
+
+                    console.log("Executing command:", command);
+
+                    exec(command, (error, stdout, stderr) => {
+                        console.log("Command executed.");
+                        console.log("stdout:", stdout);
+                        console.log("stderr:", stderr);
+
+                        if (error) {
+                            console.error(
+                                `Error during conversion: ${error.message}`
+                            );
+                            return res.status(500).json({
+                                error: "Conversion failed",
+                                details: stderr,
+                            });
+                        }
+
+                        // Check if the expected output file exists
+                        if (!fs.existsSync(expectedOutputPath)) {
+                            console.error(
+                                "Converted file not found:",
+                                expectedOutputPath
+                            );
+                            return res
+                                .status(500)
+                                .json({ error: "Converted file not found" });
+                        }
+
+                        // Rename the output file to match the desired output path
+                        const outputPath = path.join(
+                            outputDir,
+                            `${path.basename(file.originalname, path.extname(file.originalname))}.${targetFormat}`
+                        );
+                        fs.renameSync(expectedOutputPath, outputPath);
+
+                        // Send the converted file to the client
+                        res.download(outputPath, async () => {
+                            try {
+                                // Clean up files after download
+                                await fs.promises.unlink(outputPath);
+                                await fs.promises.unlink(inputPath);
+                            } catch (err) {
+                                console.error(
+                                    "Error during file cleanup:",
+                                    err.message
+                                );
+                            }
+                        });
+                    });
+                } catch (err) {
+                    console.error(
+                        `Error during ${file.mimetype} to ${targetFormat} conversion:`,
+                        err.message
+                    );
+                    res.status(500).json({
+                        error: `${file.mimetype} to ${targetFormat} conversion failed`,
+                    });
+                }
+            }
+            // Handle DOCX to TXT conversion
+            else if (
+                targetFormat === "txt" &&
+                file.mimetype ===
+                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            ) {
+                try {
+                    const outputPath = path.join(
+                        convertedDir,
+                        `${path.basename(file.originalname, path.extname(file.originalname))}.txt`
+                    );
+
+                    const command = `python doc2txt.py "${inputPath}" "${outputPath}"`;
+
+                    console.log("Executing command:", command);
+
+                    exec(command, (error, stdout, stderr) => {
+                        console.log("Command executed.");
+                        console.log("stdout:", stdout);
+                        console.log("stderr:", stderr);
+
+                        if (error) {
+                            console.error(
+                                `Error during conversion: ${error.message}`
+                            );
+                            return res.status(500).json({
+                                error: "Conversion failed",
+                                details: stderr,
+                            });
+                        }
+
+                        // Check if the output file exists
+                        if (!fs.existsSync(outputPath)) {
+                            console.error(
+                                "Converted file not found:",
+                                outputPath
+                            );
+                            return res
+                                .status(500)
+                                .json({ error: "Converted file not found" });
+                        }
+
+                        // Send the converted file to the client
+                        res.download(outputPath, async () => {
+                            try {
+                                // Clean up files after download
+                                await fs.promises.unlink(outputPath);
+                                await fs.promises.unlink(inputPath);
+                            } catch (err) {
+                                console.error(
+                                    "Error during file cleanup:",
+                                    err.message
+                                );
+                            }
+                        });
+                    });
+                } catch (err) {
+                    console.error(
+                        "Error during DOCX to TXT conversion:",
+                        err.message
+                    );
+                    res.status(500).json({
+                        error: "DOCX to TXT conversion failed",
                     });
                 }
             } else {
