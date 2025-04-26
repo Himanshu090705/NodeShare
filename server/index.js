@@ -13,12 +13,12 @@ import fs from "fs";
 import ffmpeg from "fluent-ffmpeg";
 import ffmpegPath from "ffmpeg-static";
 import sharp from "sharp";
-import pdfPoppler from "pdf-poppler";
+// import pdfPoppler from "pdf-poppler";
 import archiver from "archiver";
 import { PDFDocument, StandardFonts } from "pdf-lib";
 import potrace from "potrace";
 import xml2js from "xml2js";
-import pdfParse from "pdf-parse";
+// import pdfParse from "pdf-parse";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { exec } from "child_process";
@@ -200,13 +200,13 @@ if (NODE_ENV === "production") {
 
             const inputPath = file.path;
 
-            // Handle PDF to DOCX conversion using Python script
+            // Handle PDF to DOCX conversion using python3 script
             if (
                 targetFormat === "docx" &&
                 file.mimetype === "application/pdf"
             ) {
                 try {
-                    const command = `python pdf2doc.py ${inputPath} ${path.join(
+                    const command = `python3 pdf2doc.py ${inputPath} ${path.join(
                         convertedDir,
                         "output.docx"
                     )}`;
@@ -1653,7 +1653,7 @@ if (NODE_ENV === "production") {
                         `${path.basename(file.originalname, path.extname(file.originalname))}.txt`
                     );
 
-                    const command = `python doc2txt.py "${inputPath}" "${outputPath}"`;
+                    const command = `python3 doc2txt.py "${inputPath}" "${outputPath}"`;
 
                     console.log("Executing command:", command);
 

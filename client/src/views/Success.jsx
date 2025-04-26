@@ -16,7 +16,7 @@ function Success() {
     async function fetchPaymentDetails() {
       try {
         const response = await fetch(
-          `http://localhost:3001/payment-status?session_id=${sessionId}`
+          `http://localhost:3001/payment-status?session_id=${sessionId}`,
         );
 
         if (!response.ok) {
@@ -31,7 +31,6 @@ function Success() {
 
         if (data.status === "paid") {
           if (name === "Pro") {
-
             const updateResponse = await supabase
               .from("subscriptions")
               .update({ plan: "Pro", tokens: "100" })
@@ -40,14 +39,13 @@ function Success() {
             if (updateResponse.error) {
               console.error(
                 "Failed to update subscription:",
-                updateResponse.error
+                updateResponse.error,
               );
             } else {
               window.alert("Plan changed");
               navigate("/profile");
             }
           } else if (name === "Premium") {
-
             const updateResponse = await supabase
               .from("subscriptions")
               .update({ plan: "Premium", tokens: "Unlimited" })
@@ -56,7 +54,7 @@ function Success() {
             if (updateResponse.error) {
               console.error(
                 "Failed to update subscription:",
-                updateResponse.error
+                updateResponse.error,
               );
             } else {
               window.alert("Plan changed");

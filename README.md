@@ -7,18 +7,18 @@ Nodeshare is a peer-to-peer (P2P) platform for seamless file sharing and file fo
 ## Features
 
 1. **File Sharing**:
-    - Upload files and share them via a secure link.
-    - Peer-to-peer sharing ensures data is not stored on centralized servers.
+   - Upload files and share them via a secure link.
+   - Peer-to-peer sharing ensures data is not stored on centralized servers.
 2. **File Conversion**:
-    - Convert files between popular formats (e.g., PDF to Word, PNG to JPEG).
-    - High-speed conversion with support for various file types.
+   - Convert files between popular formats (e.g., PDF to Word, PNG to JPEG).
+   - High-speed conversion with support for various file types.
 3. **User Management**:
-    - Register and log in securely.
-    - Manage account details and preferences.
+   - Register and log in securely.
+   - Manage account details and preferences.
 4. **Subscription Plans**:
-    - Upgrade to premium plans for advanced features like larger file uploads and priority conversions.
+   - Upgrade to premium plans for advanced features like larger file uploads and priority conversions.
 5. **File History**:
-    - Maintain version control for edited or converted files.
+   - Maintain version control for edited or converted files.
 
 ## Modules and Database Schema
 

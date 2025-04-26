@@ -61,7 +61,7 @@ function Download() {
 
   return (
     <div className="container mt-5">
-      <div className="row justify-content-center">
+      <div className="row justify-content-center mt-5">
         <div className="col-12 col-md-8 col-lg-6">
           <div className="card shadow p-4 text-center">
             <h4 className="mb-3">Download Files</h4>
