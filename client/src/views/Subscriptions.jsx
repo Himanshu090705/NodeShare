@@ -9,7 +9,7 @@ function Subscriptions() {
             name: "Free",
             price: "$0",
             about: "Basic features for individuals.",
-            tokens: "50",
+            tokens: "2",
             priceId: "price_1R98YRERYVwyvKr5R72PXpZb",
             features: [
                 "✔ Basic Support",
@@ -22,7 +22,7 @@ function Subscriptions() {
         {
             name: "Pro",
             price: "$50",
-            tokens: "100",
+            tokens: "2",
             priceId: "price_1R98YuERYVwyvKr5bFhpi8LM",
             about: "Advanced features for professionals.",
             features: [

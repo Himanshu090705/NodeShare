@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { supabase } from "../../../server/db/connect";
 import { SERVER_URL } from "../../../config";
 
 const Convert = () => {
@@ -8,7 +9,7 @@ const Convert = () => {
   const [loading, setLoading] = useState(false);
   const [availableFormats, setAvailableFormats] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
-  const url = `${SERVER_URL}/api`;
+  const url1 = `${SERVER_URL}/api`;
 
   const formatOptions = {
     "image/jpeg": ["png", "heic", "webp", "pdf", "svg"],
@@ -54,6 +55,22 @@ const Convert = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const user = await supabase.auth.getUser();
+    const id = user.data.user.id;
+    const subscriptions = await supabase
+      .from("subscriptions")
+      .select()
+      .eq("userId", id);
+    const data = subscriptions.data[0];
+
+    if (data.tokens != "Unlimited") {
+      let t = Number.parseInt(data.tokens, 10);
+      if (t === 0) {
+        window.alert("Your Limit has been exceeded");
+        return;
+      }
+    }
     if (!file) return alert("Please upload a file");
 
     const formData = new FormData();
@@ -63,11 +80,9 @@ const Convert = () => {
     setLoading(true);
     setErrorMessage("");
     try {
-      const response = await axios.post(`${url}/convert`, formData, {
+      const response = await axios.post(`${url1}/convert`, formData, {
         responseType: "blob",
       });
-
-      console.log(response);
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;

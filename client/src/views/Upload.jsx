@@ -116,6 +116,7 @@ function Upload() {
   };
 
   const uploadFiles = async (filesToUpload) => {
+
     const user = await supabase.auth.getUser();
     const id = user.data.user.id;
     const subscriptions = await supabase
@@ -123,6 +124,14 @@ function Upload() {
       .select()
       .eq("userId", id);
     const data = subscriptions.data[0];
+
+    if(data.tokens != "Unlimited") {
+      let t = Number.parseInt(data.tokens, 10);
+      if(t === 0) {
+        window.alert("Your Limit has been exceeded")
+        return;
+      }
+    }
 
     const fileDataArray = filesToUpload.map((file) => {
       const reader = new FileReader();
@@ -148,7 +157,6 @@ function Upload() {
         .from("subscriptions")
         .update({ tokens: tokens.toString() })
         .eq("userId", id);
-      console.log(response);
     }
   };
 
